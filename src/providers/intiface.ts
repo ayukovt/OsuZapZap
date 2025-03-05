@@ -19,15 +19,13 @@ export class IntifaceProvider extends BaseProvider {
     init() {
         console.log('Initializing IntifaceProvider');
         if (config.config.hapticMode !== HapticMode.intiface) {
-            console.error('intiface requires hapticMode to be intiface');
-            process.exit(1);
+            throw new Error('intiface requires hapticMode to be intiface');
         }
         const requiredConfig = ['port'];
         for (const key of requiredConfig) {
             // @ts-expect-error index signature
             if (!config.config.intiface[key]) {
-                console.error(`Missing required config: intiface.${key}`);
-                process.exit(1);
+                throw new Error(`Missing required config: intiface.${key}`);
             }
         }
         
@@ -36,8 +34,7 @@ export class IntifaceProvider extends BaseProvider {
     }
     private reconnect() {
         if (config.config.hapticMode !== HapticMode.intiface) {
-            console.error('intiface requires hapticMode to be intiface');
-            process.exit(1);
+            throw new Error('intiface requires hapticMode to be intiface');
         }
         this.client = new ButtplugClient("OsuZapZap");
         this.connector = new ButtplugNodeWebsocketClientConnector(`ws://${config.config.intiface.host}:${config.config.intiface.port}/buttplug`);

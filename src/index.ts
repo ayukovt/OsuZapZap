@@ -2,8 +2,24 @@ import config, { Mode } from "config";
 import providers from "providers";
 import WebSocket from "ws";
 
+for (const type of ["unhandledRejection", "uncaughtException"]) {
+  process.on(type, (error) => {
+    console.error(error.message)
+    console.log('An error has occurred! Press any key to close.');
 
-console.log('Config:', config);
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+    process.stdin.setEncoding('utf8');
+
+    process.stdin.once('data', () => {
+      process.exit(1);
+    });
+  });
+}
+
+
+
+// console.log('Config:', config);
 
 let cooldownTriggered = false;
 function triggerCooldown() {
@@ -18,8 +34,7 @@ let hits = 0;
 
 const providerClass = providers[config.config.hapticMode]
 if (!providerClass) {
-  console.error('Invalid hapticMode:', config.config.hapticMode);
-  process.exit(1);
+  throw new Error('Invalid hapticMode: ' + config.config.hapticMode)
 }
 const provider = new providerClass();
 provider.init();
@@ -44,7 +59,11 @@ provider.init();
         if (shouldHaptic && !cooldownTriggered) {
           triggerCooldown();
           console.log('Sending Haptic...');
-          provider.haptic();
+          try {
+            provider.haptic();
+          } catch(e) {
+            console.error("Error Sending Haptic!", e)
+          }
         }
       };
 
@@ -52,6 +71,9 @@ provider.init();
         console.log('Disconnected from TOsu, retrying in 1 second...');
         setTimeout(res, 1000);
       };
+      ws.onerror = () => {
+        throw new Error("TOsu is not running! Please run TOsu before starting this app!")
+      }
     });
   }
 })();

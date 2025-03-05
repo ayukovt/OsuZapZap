@@ -1,12 +1,10 @@
 export class BaseProvider {
     static providerConfigMode: string;
     init() {
-        console.error('BaseProvider.init() not implemented');
-        process.exit(1);
+        throw new Error('BaseProvider.init() not implemented');
     }
 
     haptic() {
-        console.error('BaseProvider.haptic() not implemented');
-        process.exit(1);
+        throw new Error('BaseProvider.haptic() not implemented');
     }
 }

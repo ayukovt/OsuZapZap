@@ -45,8 +45,7 @@ export class PiShockProvider extends BaseProvider {
     init() {
         console.log('Initializing PiShockProvider');
         if (config.config.hapticMode !== HapticMode.pishock) {
-            console.error('PiShockProvider requires hapticMode to be pishock');
-            process.exit(1);
+            throw new Error('PiShockProvider requires hapticMode to be pishock');
         }
         const requiredConfig = [
             'username',
@@ -63,14 +62,12 @@ export class PiShockProvider extends BaseProvider {
                 requiredConfig.push('duration');
                 break;
             default:
-                console.error('Invalid mode:', config.config.piShock.mode);
-                process.exit(1);
+                throw new Error('Invalid mode: ' + config.config.piShock.mode);
         }
         for (const key of requiredConfig) {
             // @ts-expect-error index signature
             if (!config.config.piShock[key]) {
-                console.error(`Missing required config: piShock.${key}`);
-                process.exit(1);
+                throw new Error(`Missing required config: piShock.${key}`);
             }
         }
         this.device = new PiShockDevice({
@@ -80,14 +77,12 @@ export class PiShockProvider extends BaseProvider {
             name: "OsuZapZap"
         });
         if (!this.device) {
-            console.error('Failed to initialize PiShockDevice');
-            process.exit(1);
+            throw new Error('Failed to initialize PiShockDevice');
         }
     }
     haptic() {
         if (config.config.hapticMode !== HapticMode.pishock) {
-            console.error('PiShockProvider requires hapticMode to be pishock');
-            process.exit(1);
+            throw new Error('PiShockProvider requires hapticMode to be pishock');
         }
         switch (config.config.piShock.mode) {
             case 'beep':
@@ -100,8 +95,7 @@ export class PiShockProvider extends BaseProvider {
                 this.device.vibrate(config.config.piShock.duration, config.config.piShock.strength);
                 break;
             default:
-                console.error('Invalid mode:', config.config.piShock.mode);
-                process.exit(1);
+                throw new Error('Invalid PIShock mode: ' + config.config.piShock.mode);
         }
     }
 }

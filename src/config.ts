@@ -34,8 +34,7 @@ function findConfigPath(): string {
             return relPath;
         }
     }
-    console.error('Could not find config.json');
-    process.exit(1);
+    throw new Error('Could not find config.json');
 }
 
 class clConfig {
