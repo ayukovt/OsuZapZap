@@ -47,13 +47,16 @@ export class IntifaceProvider extends BaseProvider {
         });
         this.client.connect(this.connector);
     }
-    haptic() {
-        if (this.client.devices.length === 0) {
-            console.error('No devices connected');
-            return;
-        }
-        this.client.devices.forEach((device) => {
-            device.vibrate(0.5);
-        });
-    }
+async haptic() {
+  if (this.client.devices.length === 0) {
+    console.error("No devices connected");
+    return;
+  }
+  
+  for (const device of this.client.devices) {
+    device.vibrate(0.5);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    device.vibrate(0);
+  }
+};
 }
